@@ -2866,7 +2866,7 @@ namespace TShockAPI
 				return true;
 			}
 
-			if (action < 0 || action > 5)
+			if (action > 5)
 			{
 				TShock.Log.ConsoleDebug(GetString("GetDataHandlers / HandleDoorUse rejected type 0 5 check {0}", args.Player.Name));
 				return true;

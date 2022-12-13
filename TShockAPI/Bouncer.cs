@@ -505,7 +505,7 @@ namespace TShockAPI
 				return;
 			}
 
-			if (item < 0 || item >= args.Player.TPlayer.inventory.Length)
+			if (item >= args.Player.TPlayer.inventory.Length)
 			{
 				TShock.Log.ConsoleDebug(GetString("Bouncer / OnPlayerUpdate rejected from (inventory length) {0}", args.Player.Name));
 				args.Handled = true;
@@ -2528,7 +2528,7 @@ namespace TShockAPI
 			}
 		}
 
-		/// <summary>Handles validation of of basic anti-cheat on mass wire operations.</summary>
+		/// <summary>Handles validation of basic anti-cheat on mass wire operations.</summary>
 		/// <param name="sender">The object that triggered the event.</param>
 		/// <param name="args">The packet arguments that the event has.</param>
 		internal void OnMassWireOperation(object sender, GetDataHandlers.MassWireOperationEventArgs args)
@@ -2678,15 +2678,6 @@ namespace TShockAPI
 			short damage = args.Damage;
 			short id = args.PlayerId;
 			PlayerDeathReason playerDeathReason = args.PlayerDeathReason;
-
-			if (damage > 42000) //Abnormal values have the potential to cause infinite loops in the server.
-			{
-				TShock.Log.ConsoleDebug(GetString("Bouncer / OnKillMe rejected high damage from {0} {1}", args.Player.Name, damage));
-				args.Player.Kick(GetString("Failed to shade polygon normals."), true, true);
-				TShock.Log.ConsoleError(GetString("Death Exploit Attempt: Damage {0}", damage));
-				args.Handled = true;
-				return;
-			}
 
 			if (id >= Main.maxPlayers)
 			{

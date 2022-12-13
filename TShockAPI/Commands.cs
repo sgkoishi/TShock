@@ -1282,7 +1282,7 @@ namespace TShockAPI
 
 					if (DateTime.TryParse(account.LastAccessed, out LastSeen))
 					{
-						LastSeen = DateTime.Parse(account.LastAccessed).ToLocalTime();
+						LastSeen = LastSeen.ToLocalTime();
 						args.Player.SendSuccessMessage(GetString("{0}'s last login occurred {1} {2} UTC{3}.", account.Name, LastSeen.ToShortDateString(),
 							LastSeen.ToShortTimeString(), Timezone));
 					}
@@ -4715,19 +4715,22 @@ namespace TShockAPI
 						if (args.Parameters.Count == 3)
 						{
 							string regionName = args.Parameters[1];
-							if (args.Parameters[2].ToLower() == "true")
+							if (bool.TryParse(args.Parameters[2], out var protect))
 							{
-								if (TShock.Regions.SetRegionState(regionName, true))
-									args.Player.SendInfoMessage(GetString("Marked region {0} as protected.", regionName));
+								if (protect)
+								{
+									if (TShock.Regions.SetRegionState(regionName, true))
+										args.Player.SendInfoMessage(GetString("Marked region {0} as protected.", regionName));
+									else
+										args.Player.SendErrorMessage(GetString($"Could not find the region {regionName}."));
+								}
 								else
-									args.Player.SendErrorMessage(GetString($"Could not find the region {regionName}."));
-							}
-							else if (args.Parameters[2].ToLower() == "false")
-							{
-								if (TShock.Regions.SetRegionState(regionName, false))
-									args.Player.SendInfoMessage(GetString("Marked region {0} as unprotected.", regionName));
-								else
-									args.Player.SendErrorMessage(GetString($"Could not find the region {regionName}."));
+								{
+									if (TShock.Regions.SetRegionState(regionName, false))
+										args.Player.SendInfoMessage(GetString("Marked region {0} as unprotected.", regionName));
+									else
+										args.Player.SendErrorMessage(GetString($"Could not find the region {regionName}."));
+								}
 							}
 							else
 								args.Player.SendErrorMessage(GetString("Invalid syntax. Proper syntax: {0}region protect <name> <true/false>.", Specifier));
@@ -4765,19 +4768,7 @@ namespace TShockAPI
 						if (args.Parameters.Count > 2)
 						{
 							string playerName = args.Parameters[1];
-							string regionName = "";
-
-							for (int i = 2; i < args.Parameters.Count; i++)
-							{
-								if (regionName == "")
-								{
-									regionName = args.Parameters[2];
-								}
-								else
-								{
-									regionName = regionName + " " + args.Parameters[i];
-								}
-							}
+							string regionName = string.Join(" ", args.Parameters.Skip(2)).Trim();
 							if (TShock.UserAccounts.GetUserAccountByName(playerName) != null)
 							{
 								if (TShock.Regions.AddNewUser(regionName, playerName))
@@ -4800,19 +4791,7 @@ namespace TShockAPI
 					if (args.Parameters.Count > 2)
 					{
 						string playerName = args.Parameters[1];
-						string regionName = "";
-
-						for (int i = 2; i < args.Parameters.Count; i++)
-						{
-							if (regionName == "")
-							{
-								regionName = args.Parameters[2];
-							}
-							else
-							{
-								regionName = regionName + " " + args.Parameters[i];
-							}
-						}
+						string regionName = string.Join(" ", args.Parameters.Skip(2)).Trim();
 						if (TShock.UserAccounts.GetUserAccountByName(playerName) != null)
 						{
 							if (TShock.Regions.RemoveUser(regionName, playerName))
@@ -4835,19 +4814,7 @@ namespace TShockAPI
 						if (args.Parameters.Count > 2)
 						{
 							string group = args.Parameters[1];
-							string regionName = "";
-
-							for (int i = 2; i < args.Parameters.Count; i++)
-							{
-								if (regionName == "")
-								{
-									regionName = args.Parameters[2];
-								}
-								else
-								{
-									regionName = regionName + " " + args.Parameters[i];
-								}
-							}
+							string regionName = string.Join(" ", args.Parameters.Skip(2)).Trim();
 							if (TShock.Groups.GroupExists(group))
 							{
 								if (TShock.Regions.AllowGroup(regionName, group))
@@ -4870,19 +4837,7 @@ namespace TShockAPI
 					if (args.Parameters.Count > 2)
 					{
 						string group = args.Parameters[1];
-						string regionName = "";
-
-						for (int i = 2; i < args.Parameters.Count; i++)
-						{
-							if (regionName == "")
-							{
-								regionName = args.Parameters[2];
-							}
-							else
-							{
-								regionName = regionName + " " + args.Parameters[i];
-							}
-						}
+						string regionName = string.Join(" ", args.Parameters.Skip(2)).Trim();
 						if (TShock.Groups.GroupExists(group))
 						{
 							if (TShock.Regions.RemoveGroup(regionName, group))
@@ -4947,7 +4902,7 @@ namespace TShockAPI
 						{
 							GetString("X: {0}; Y: {1}; W: {2}; H: {3}, Z: {4}", region.Area.X, region.Area.Y, region.Area.Width, region.Area.Height, region.Z),
 							GetString($"Region owner: {region.Owner}."),
-							GetString($"Protected: {region.DisableBuild.ToString()}."),
+							GetString($"Protected: {region.DisableBuild}."),
 						};
 
 						if (region.AllowedIDs.Count > 0)

@@ -38,7 +38,7 @@ using System.Linq;
 namespace TShockAPI
 {
 	/// <summary>
-	/// Bitflags used with the <see cref="Disable(string, DisableFlags)"></see> method
+	/// Bitflags used with the <see cref="TSPlayer.Disable(string, DisableFlags)"></see> method
 	/// </summary>
 	[Flags]
 	public enum DisableFlags
@@ -78,7 +78,7 @@ namespace TShockAPI
 		/// If the string comes with tsi: or tsn:, we'll only return a list with one element,
 		/// either the player with the matching ID or name, respectively.
 		/// </summary>
-		/// <param name="plr">Player name or ID</param>
+		/// <param name="search">Player name or ID</param>
 		/// <returns>A list of matching players</returns>
 		public static List<TSPlayer> FindByNameOrID(string search)
 		{
