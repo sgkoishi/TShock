@@ -2948,19 +2948,19 @@ namespace TShockAPI
 			Vector2 vel = args.Data.ReadVector2();
 			byte owner = args.Data.ReadInt8();
 			short type = args.Data.ReadInt16();
-			BitsByte bitsByte = (BitsByte)args.Data.ReadByte();
-			BitsByte bitsByte2 = (BitsByte)(bitsByte[2] ? args.Data.ReadByte() : 0);
+			NewProjectileData bits = new NewProjectileData((BitsByte)args.Data.ReadByte());
+			BitsByte bits2 = (BitsByte)(bits.AI[2] ? args.Data.ReadByte() : 0);
 			float[] ai = new float[Projectile.maxAI];
-			for (int i = 0; i < Projectile.maxAI; ++i) ai[i] = 0f;
-			ai[0] = bitsByte[0] ? args.Data.ReadSingle() : 0f;
-			ai[1] = bitsByte[1] ? args.Data.ReadSingle() : 0f;
-			ushort bannerId = (ushort)(bitsByte[3] ? args.Data.ReadUInt16() : 0);
-			short dmg = (short)(bitsByte[4] ? args.Data.ReadInt16() : 0);
-			float knockback = bitsByte[5] ? args.Data.ReadSingle() : 0f;
-			short origDmg = (short)(bitsByte[6] ? args.Data.ReadInt16() : 0);
-			short projUUID = (short)(bitsByte[7] ? args.Data.ReadInt16() : -1);
-			if (projUUID >= 1000) projUUID = -1;
-			ai[2] = (bitsByte2[0] ? args.Data.ReadSingle() : 0f);
+			ai[0] = bits.AI[0] ? args.Data.ReadSingle() : 0f;
+			ai[1] = bits.AI[1] ? args.Data.ReadSingle() : 0f;
+			ushort bannerId = bits.HasBannerIdToRespondTo ? args.Data.ReadUInt16() : (ushort)0;
+			short dmg = bits.HasDamage ? args.Data.ReadInt16() : (short)0;
+			float knockback = bits.HasKnockback ? args.Data.ReadSingle() : 0.0f;
+			short origDmg = bits.HasOriginalDamage ? args.Data.ReadInt16() : (short)0;
+			short projUUID = bits.HasUUUID ? args.Data.ReadInt16() : (short)-1;
+			if (projUUID >= 1000)
+				projUUID = -1;
+			ai[2] = bits2[0] ? args.Data.ReadSingle() : 0f;
 
 			var index = TShock.Utils.SearchProjectile(ident, owner);
 
